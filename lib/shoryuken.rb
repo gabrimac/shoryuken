@@ -14,6 +14,7 @@ require 'shoryuken/version'
 require 'shoryuken/core_ext'
 require 'shoryuken/util'
 require 'shoryuken/logging'
+require 'shoryuken/last_message_time'
 require 'shoryuken/environment_loader'
 require 'shoryuken/queue'
 require 'shoryuken/message'
@@ -38,7 +39,6 @@ require 'shoryuken/processor'
 require 'shoryuken/body_parser'
 require 'shoryuken/fetcher'
 require 'shoryuken/options'
-require 'shoryuken/last_message_time'
 
 module Shoryuken
   extend SingleForwardable
