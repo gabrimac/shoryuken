@@ -46,7 +46,7 @@ module Shoryuken
     end
 
     def receive_messages(options)
-      if Time.current - current_time.time > 5
+      if Time.current - current_time.time > 30
         self.wait_time_seconds = 20
       else
         self.wait_time_seconds = 0
@@ -55,7 +55,6 @@ module Shoryuken
       if messages.any?
         self.current_time.time = Time.current
       end
-      puts "#{self.wait_time_seconds} ------------ #{self.current_time.time} ------------ #{name}"
       messages.map { |m| Message.new(client, self, m) }
     end
 
