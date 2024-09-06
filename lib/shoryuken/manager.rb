@@ -18,6 +18,7 @@ module Shoryuken
       @running                    = Concurrent::AtomicBoolean.new(true)
       @stop_new_dispatching       = Concurrent::AtomicBoolean.new(false)
       @dispatching_release_signal = ::Queue.new
+      @current_time               = ::Shoryuken::LastMessageTime.new(Time.current)
     end
 
     def start
@@ -81,7 +82,7 @@ module Shoryuken
       @busy_processors.decrement
       fire_utilization_update_event
 
-      client_queue = Shoryuken::Client.queues(queue)
+      client_queue = Shoryuken::Client.queues(queue, @current_time)
       return unless client_queue.fifo?
       return unless @polling_strategy.respond_to?(:message_processed)
 
@@ -103,13 +104,13 @@ module Shoryuken
     end
 
     def dispatch_batch(queue)
-      batch = @fetcher.fetch(queue, BATCH_LIMIT)
+      batch = @fetcher.fetch(queue, BATCH_LIMIT, @current_time)
       @polling_strategy.messages_found(queue.name, batch.size)
       assign(queue.name, patch_batch!(batch)) if batch.any?
     end
 
     def dispatch_single_messages(queue)
-      messages = @fetcher.fetch(queue, ready)
+      messages = @fetcher.fetch(queue, ready, @current_time)
       @polling_strategy.messages_found(queue.name, messages.size)
       messages.each { |message| assign(queue.name, message) }
     end

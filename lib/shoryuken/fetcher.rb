@@ -5,16 +5,16 @@ module Shoryuken
     FETCH_LIMIT = 10
 
     def initialize(group)
-      @group = group
+      @group        = group
     end
 
-    def fetch(queue, limit)
+    def fetch(queue, limit, current_time)
       fetch_with_auto_retry(3) do
         started_at = Time.now
 
         logger.debug { "Looking for new messages in #{queue}" }
 
-        sqs_msgs = Array(receive_messages(queue, limit))
+        sqs_msgs = Array(receive_messages(queue, limit, current_time))
 
         logger.debug { "Found #{sqs_msgs.size} messages for #{queue.name}" } unless sqs_msgs.empty?
         logger.debug { "Fetcher for #{queue} completed in #{elapsed(started_at)} ms" }
@@ -44,10 +44,10 @@ module Shoryuken
       end
     end
 
-    def receive_messages(queue, limit)
+    def receive_messages(queue, limit, current_time)
       options = receive_options(queue)
 
-      shoryuken_queue = Shoryuken::Client.queues(queue.name)
+      shoryuken_queue = Shoryuken::Client.queues(queue.name, current_time)
 
       options[:max_number_of_messages]  = max_number_of_messages(shoryuken_queue, limit, options)
       options[:message_attribute_names] = %w[All]

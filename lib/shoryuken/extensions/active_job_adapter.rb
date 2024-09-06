@@ -35,7 +35,7 @@ module ActiveJob
 
         job.sqs_send_message_parameters.merge! options
 
-        queue = Shoryuken::Client.queues(job.queue_name)
+        queue = Shoryuken::Client.queues(job.queue_name, ::Shoryuken::LastMessageTime.new(Time.current))
         send_message_params = message queue, job
         job.sqs_send_message_parameters = send_message_params
         queue.send_message send_message_params

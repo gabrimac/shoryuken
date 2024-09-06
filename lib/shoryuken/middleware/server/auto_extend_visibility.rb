@@ -26,7 +26,7 @@ module Shoryuken
           include Util
 
           def auto_extend(_worker, queue, sqs_msg, _body)
-            queue_visibility_timeout = Shoryuken::Client.queues(queue).visibility_timeout
+            queue_visibility_timeout = Shoryuken::Client.queues(queue, ::Shoryuken::LastMessageTime.new(Time.current)).visibility_timeout
 
             Concurrent::TimerTask.new(execution_interval: queue_visibility_timeout - EXTEND_UPFRONT_SECONDS) do
               begin

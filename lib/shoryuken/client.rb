@@ -3,8 +3,8 @@ module Shoryuken
     @@queues = {}
 
     class << self
-      def queues(name)
-        @@queues[name.to_s] ||= Shoryuken::Queue.new(sqs, name)
+      def queues(name, current_time)
+        @@queues[name.to_s] ||= Shoryuken::Queue.new(sqs, name, current_time)
       end
 
       def sqs

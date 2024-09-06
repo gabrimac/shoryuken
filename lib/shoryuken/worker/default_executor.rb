@@ -13,7 +13,7 @@ module Shoryuken
 
           queue = options.delete(:queue) || worker_class.get_shoryuken_options['queue']
 
-          Shoryuken::Client.queues(queue).send_message(options)
+          Shoryuken::Client.queues(queue, ::Shoryuken::LastMessageTime.new(Time.current)).send_message(options)
         end
 
         def perform_in(worker_class, interval, body, options = {})

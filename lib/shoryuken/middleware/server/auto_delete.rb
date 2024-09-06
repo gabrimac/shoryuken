@@ -9,7 +9,7 @@ module Shoryuken
 
           entries = [sqs_msg].flatten.map.with_index { |message, i| { id: i.to_s, receipt_handle: message.receipt_handle } }
 
-          Shoryuken::Client.queues(queue).delete_messages(entries: entries)
+          Shoryuken::Client.queues(queue, ::Shoryuken::LastMessageTime.new(Time.current)).delete_messages(entries: entries)
         end
       end
     end

@@ -38,6 +38,7 @@ require 'shoryuken/processor'
 require 'shoryuken/body_parser'
 require 'shoryuken/fetcher'
 require 'shoryuken/options'
+require 'shoryuken/last_message_time'
 
 module Shoryuken
   extend SingleForwardable

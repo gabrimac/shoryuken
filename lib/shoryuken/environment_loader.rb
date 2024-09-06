@@ -162,7 +162,7 @@ module Shoryuken
 
       Shoryuken.ungrouped_queues.uniq.each do |queue|
         begin
-          Shoryuken::Client.queues(queue)
+          Shoryuken::Client.queues(queue, ::Shoryuken::LastMessageTime.new(Time.current))
         rescue Aws::Errors::NoSuchEndpointError, Aws::SQS::Errors::NonExistentQueue
           non_existent_queues << queue
         end

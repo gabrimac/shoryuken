@@ -13,7 +13,7 @@ module Shoryuken
 
           total_time = elapsed(started_at)
 
-          if (total_time / 1000.0) > (timeout = Shoryuken::Client.queues(queue).visibility_timeout)
+          if (total_time / 1000.0) > (timeout = Shoryuken::Client.queues(queue, ::Shoryuken::LastMessageTime.new(Time.current)).visibility_timeout)
             logger.warn { "exceeded the queue visibility timeout by #{total_time - (timeout * 1000)} ms" }
           end
 

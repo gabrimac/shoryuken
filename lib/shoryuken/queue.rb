@@ -6,11 +6,13 @@ module Shoryuken
     MESSAGE_GROUP_ID        = 'ShoryukenMessage'.freeze
     VISIBILITY_TIMEOUT_ATTR = 'VisibilityTimeout'.freeze
 
-    attr_accessor :name, :client, :url
+    attr_accessor :name, :client, :url, :wait_time_seconds, :current_time
 
-    def initialize(client, name_or_url_or_arn)
+    def initialize(client, name_or_url_or_arn, current_time)
       self.client = client
       set_name_and_url(name_or_url_or_arn)
+
+      self.current_time = current_time
     end
 
     def visibility_timeout
@@ -44,7 +46,16 @@ module Shoryuken
     end
 
     def receive_messages(options)
-      messages = client.receive_message(options.merge(queue_url: url)).messages || []
+      if Time.current - current_time.time > 5
+        self.wait_time_seconds = 20
+      else
+        self.wait_time_seconds = 0
+      end
+      messages = client.receive_message(options.except(:wait_time_seconds).merge(queue_url: url, wait_time_seconds: self.wait_time_seconds)).messages || []
+      if messages.any?
+        self.current_time.time = Time.current
+      end
+      puts "#{self.wait_time_seconds} ------------ #{self.current_time.time} ------------ #{name}"
       messages.map { |m| Message.new(client, self, m) }
     end
 
